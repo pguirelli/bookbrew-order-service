@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "auth.service.url",
+    "type": "java.lang.String",
+    "description": "A description for 'auth.service.url'"
+  },
+  {
+    "name": "cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-origins'"
+  },
+  {
+    "name": "customer.service.url",
+    "type": "java.lang.String",
+    "description": "A description for 'customer.service.url'"
+  },
+  {
+    "name": "product.service.url",
+    "type": "java.lang.String",
+    "description": "A description for 'product.service.url'"
+  }
+]}
