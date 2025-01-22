@@ -11,4 +11,5 @@ public interface CustomerClient {
 
     @GetMapping("/api/customers/{id}")
     CustomerDTO findCustomerById(@PathVariable Long id);
+
 }

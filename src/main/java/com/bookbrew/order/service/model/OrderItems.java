@@ -1,5 +1,6 @@
 package com.bookbrew.order.service.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.bookbrew.order.service.dto.ProductDTO;
@@ -38,11 +39,11 @@ public class OrderItems {
     @NotNull(message = "Quantity is required")
     private Integer quantity;
 
-    @NotNull(message = "Price is required")
-    private Double price;
+    private BigDecimal price;
 
-    @NotNull(message = "Total price is required")
-    private Double totalPrice;
+    private BigDecimal discountValue;
+
+    private BigDecimal totalPrice;
 
     private LocalDateTime creationDate;
 
@@ -60,8 +61,8 @@ public class OrderItems {
         return orderId;
     }
 
-    public void setOrderId(Order orderId) {
-        this.orderId = orderId;
+    public void setOrderId(Order order) {
+        this.orderId = order;
     }
 
     public Long getProductId() {
@@ -88,19 +89,19 @@ public class OrderItems {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Double getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -118,6 +119,14 @@ public class OrderItems {
 
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public BigDecimal getDiscountValue() {
+        return discountValue;
+    }
+
+    public void setDiscountValue(BigDecimal discountValue) {
+        this.discountValue = discountValue;
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bookbrew.order.service.dto.OrderRequestDTO;
 import com.bookbrew.order.service.model.Order;
-import com.bookbrew.order.service.model.Payment;
 import com.bookbrew.order.service.service.OrderService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     @Autowired
@@ -43,16 +43,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
-    @PutMapping("/{orderId}/payment")
-    public ResponseEntity<Order> updateOrderPayment(@PathVariable Long orderId, @Valid @RequestBody Payment payment) {
-        Order updatedOrder = orderService.updateOrderPayment(orderId, payment);
+    @PutMapping("/{orderId}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId, @RequestBody OrderRequestDTO orderRequest) {
+        Order updatedOrder = orderService.updateOrder(orderId, orderRequest);
         return ResponseEntity.ok(updatedOrder);
     }
 
-    @PutMapping("/{orderId}/cancel")
-    public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
-        Order cancelledOrder = orderService.cancelOrder(orderId);
-        return ResponseEntity.ok(cancelledOrder);
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -25,7 +25,7 @@ public class CustomerDTO {
 
     private String birthDate;
 
-    private List<Long> addressesDTO;
+    private List<AddressDTO> addressesDTO;
 
     private Long profileId;
 
@@ -117,11 +117,11 @@ public class CustomerDTO {
         this.birthDate = birthDate;
     }
 
-    public List<Long> getAddressesDTO() {
+    public List<AddressDTO> getAddressesDTO() {
         return addressesDTO;
     }
 
-    public void setAddressesDTO(List<Long> addressesDTO) {
+    public void setAddressesDTO(List<AddressDTO> addressesDTO) {
         this.addressesDTO = addressesDTO;
     }
 

@@ -1,9 +1,9 @@
 package com.bookbrew.order.service.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.bookbrew.order.service.dto.AddressDTO;
 import com.bookbrew.order.service.dto.CustomerDTO;
 
 import jakarta.persistence.CascadeType;
@@ -36,18 +36,24 @@ public class Order {
 
     private LocalDateTime orderDate;
 
-    @NotNull(message = "Amount is required")
-    private Double amount;
-
     @NotBlank(message = "Status is required")
     private String status;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
     private List<OrderItems> orderItems;
+
+    @NotNull(message = "Sub total is required")
+    private BigDecimal subTotal;
 
     @NotNull(message = "Item count is required")
     private Integer itemCount;
+
+    @NotNull(message = "Discount amount is required")
+    private BigDecimal discountAmount;
+
+    @NotNull(message = "Amount is required")
+    private Double amount;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
@@ -55,9 +61,6 @@ public class Order {
 
     @Column(name = "address_id")
     private Long addressId;
-
-    @Transient
-    private AddressDTO addressDTO;
 
     private LocalDateTime creationDate;
 
@@ -127,6 +130,22 @@ public class Order {
         this.itemCount = itemCount;
     }
 
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal totalDiscount) {
+        this.discountAmount = totalDiscount;
+    }
+
+    public BigDecimal getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
+    }
+
     public Payment getPayment() {
         return payment;
     }
@@ -141,14 +160,6 @@ public class Order {
 
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
-    }
-
-    public AddressDTO getAddressDTO() {
-        return addressDTO;
-    }
-
-    public void setAddressDTO(AddressDTO addressDTO) {
-        this.addressDTO = addressDTO;
     }
 
     public LocalDateTime getCreationDate() {

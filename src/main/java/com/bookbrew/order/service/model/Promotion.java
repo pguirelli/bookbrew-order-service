@@ -1,5 +1,6 @@
 package com.bookbrew.order.service.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.bookbrew.order.service.dto.ProductDTO;
@@ -32,7 +33,7 @@ public class Promotion {
     private ProductDTO productDTO;
 
     @NotNull(message = "Discount percentage is required")
-    private Double discountPercentage;
+    private BigDecimal discountPercentage;
 
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
@@ -79,11 +80,11 @@ public class Promotion {
         this.productDTO = productDTO;
     }
 
-    public Double getDiscountPercentage() {
+    public BigDecimal getDiscountPercentage() {
         return discountPercentage;
     }
 
-    public void setDiscountPercentage(Double discountPercentage) {
+    public void setDiscountPercentage(BigDecimal discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 

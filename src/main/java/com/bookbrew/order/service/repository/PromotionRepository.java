@@ -10,4 +10,6 @@ import com.bookbrew.order.service.model.Promotion;
 @Repository
 public interface PromotionRepository extends JpaRepository<Promotion, Long> {
     List<Promotion> findByProductId(Long productId);
+
+    List<Promotion> findByStatus(Boolean status);
 }

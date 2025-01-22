@@ -1,5 +1,7 @@
 package com.bookbrew.order.service.dto;
 
+import java.math.BigDecimal;
+
 public class ProductDTO {
 
     private Long id;
@@ -10,7 +12,7 @@ public class ProductDTO {
 
     private String description;
 
-    private Double price;
+    private BigDecimal price;
 
     private Integer stock;
 
@@ -60,11 +62,11 @@ public class ProductDTO {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
