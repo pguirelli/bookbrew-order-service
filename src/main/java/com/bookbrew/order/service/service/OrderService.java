@@ -6,20 +6,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bookbrew.order.service.client.CustomerClient;
 import com.bookbrew.order.service.client.ProductClient;
-import com.bookbrew.order.service.dto.CustomerDTO;
 import com.bookbrew.order.service.dto.OrderRequestDTO;
 import com.bookbrew.order.service.dto.ProductDTO;
 import com.bookbrew.order.service.exception.InsufficientStockException;
+import com.bookbrew.order.service.exception.ResourceNotFoundException;
 import com.bookbrew.order.service.model.Order;
 import com.bookbrew.order.service.model.OrderItems;
 import com.bookbrew.order.service.model.Payment;
@@ -42,11 +39,14 @@ public class OrderService {
     @Autowired
     private ProductClient productClient;
 
-    @Autowired
-    private CustomerClient customerClient;
-
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found");
+        }
+
+        return orders;
     }
 
     public Order getOrderById(Long orderId) {
@@ -59,11 +59,8 @@ public class OrderService {
         try {
             validateProductsAvailability(orderRequest.getOrderItems());
 
-            CustomerDTO customerDTO = customerClient.findCustomerById(orderRequest.getCustomerId());
-
             Order order = new Order();
             order.setCustomerId(orderRequest.getCustomerId());
-            order.setCustomerDTO(customerDTO);
             order.setOrderDate(LocalDateTime.now());
             order.setStatus("Aguardando pagamento");
 
@@ -95,49 +92,66 @@ public class OrderService {
             Order existingOrder = orderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
 
-            if (orderRequest.getDeliveryAddress() != null)
+            if (orderRequest.getDeliveryAddress() != null) {
                 existingOrder.setAddressId(orderRequest.getDeliveryAddress());
-
-            List<OrderItems> updatedItems = new ArrayList<>();
+            }
 
             if (orderRequest.getOrderItems() != null) {
-                Map<Long, OrderItems> existingItemsMap = existingOrder.getOrderItems().stream()
-                        .collect(Collectors.toMap(OrderItems::getId, Function.identity()));
+                List<OrderItems> currentItems = new ArrayList<>(existingOrder.getOrderItems());
+                List<OrderItems> updatedItems = new ArrayList<>();
 
-                updatedItems = orderRequest.getOrderItems().stream()
-                        .map((OrderItems newItem) -> {
-                            if (newItem.getId() != null && existingItemsMap.containsKey(newItem.getId())) {
-                                OrderItems existingItem = existingItemsMap.get(newItem.getId());
-                                existingItem.setQuantity(newItem.getQuantity());
-                                existingItem.setProductId(newItem.getProductId());
-                                existingItem.setUpdateDate(LocalDateTime.now());
-
-                                return existingItem;
-                            } else {
-                                return processOrderItems(Collections.singletonList(newItem), existingOrder).get(0);
-                            }
-                        })
+                List<Long> updatedItemIds = orderRequest.getOrderItems().stream()
+                        .filter(item -> item.getId() != null)
+                        .map(OrderItems::getId)
                         .collect(Collectors.toList());
+
+                currentItems.removeIf(item -> !updatedItemIds.contains(item.getId()));
+
+                for (OrderItems itemDTO : orderRequest.getOrderItems()) {
+                    if (itemDTO.getId() != null) {
+                        OrderItems existingItem = currentItems.stream()
+                                .filter(item -> item.getId().equals(itemDTO.getId()))
+                                .findFirst()
+                                .orElseThrow(
+                                        () -> new RuntimeException("Order item not found with id: " + itemDTO.getId()));
+
+                        existingItem.setQuantity(itemDTO.getQuantity());
+                        existingItem.setProductId(itemDTO.getProductId());
+                        existingItem.setUpdateDate(LocalDateTime.now());
+
+                        ProductDTO product = productClient.findProductById(itemDTO.getProductId());
+                        existingItem.setPrice(product.getPrice());
+                        existingItem
+                                .setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity())));
+
+                        updatedItems.add(existingItem);
+                    } else {
+                        OrderItems newItem = processOrderItems(Collections.singletonList(itemDTO), existingOrder)
+                                .get(0);
+                        updatedItems.add(newItem);
+                    }
+                }
 
                 existingOrder.getOrderItems().clear();
                 existingOrder.getOrderItems().addAll(updatedItems);
-            }
 
-            if (!updatedItems.isEmpty()) {
                 BigDecimal subtotal = calculateSubTotal(updatedItems);
                 Integer totalItems = calculateItemsCount(updatedItems);
                 BigDecimal orderDiscount = applyPromotions(updatedItems);
+
                 existingOrder.setSubTotal(subtotal);
                 existingOrder.setItemCount(totalItems);
                 existingOrder.setDiscountAmount(orderDiscount);
                 existingOrder.setAmount(calculateAmount(subtotal, totalItems, orderDiscount));
             }
 
-            if (orderRequest.getStatus() != null)
+            if (orderRequest.getStatus() != null) {
                 existingOrder.setStatus(orderRequest.getStatus());
+            }
 
-            if (orderRequest.getPayment() != null)
+            if (orderRequest.getPayment() != null) {
                 existingOrder.setPayment(processPayment(orderRequest.getPayment()));
+            }
 
             return orderRepository.save(existingOrder);
         } catch (Exception e) {
@@ -194,7 +208,6 @@ public class OrderService {
     private BigDecimal calculateItemDiscount(OrderItems item, Promotion promotion) {
         BigDecimal itemTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
 
-        // Calculate discount based on promotion percentage
         BigDecimal discountAmount = itemTotal.multiply(promotion.getDiscountPercentage())
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
@@ -213,6 +226,8 @@ public class OrderService {
             orderItem.setProductId(product.getId());
             orderItem.setQuantity(item.getQuantity());
             orderItem.setPrice(product.getPrice());
+            orderItem.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+
             for (Promotion promotion : activePromotions) {
                 if (promotion.getProductId().equals(item.getProductId())) {
                     item.setPrice(product.getPrice());
@@ -221,6 +236,9 @@ public class OrderService {
                     orderItem.setDiscountValue(itemDiscount);
                     orderItem.setTotalPrice(discountedPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
                 }
+            }
+            if (orderItem.getDiscountValue() == null) {
+                orderItem.setDiscountValue(BigDecimal.ZERO);
             }
             orderItem.setCreationDate(LocalDateTime.now());
             orderItems.add(orderItem);

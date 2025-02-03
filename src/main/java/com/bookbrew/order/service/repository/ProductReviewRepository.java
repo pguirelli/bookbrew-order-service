@@ -9,7 +9,9 @@ import com.bookbrew.order.service.model.ProductReview;
 
 @Repository
 public interface ProductReviewRepository extends JpaRepository<ProductReview, Long> {
+
     List<ProductReview> findByProductId(Long productId);
 
     List<ProductReview> findByUserId(Long userId);
+
 }

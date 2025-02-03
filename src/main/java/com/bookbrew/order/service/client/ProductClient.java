@@ -15,5 +15,5 @@ public interface ProductClient {
     ProductDTO findProductById(@PathVariable Long id);
 
     @PutMapping("/api/products/{id}")
-    ProductDTO updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO productDTO);
+    ProductDTO updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO);
 }

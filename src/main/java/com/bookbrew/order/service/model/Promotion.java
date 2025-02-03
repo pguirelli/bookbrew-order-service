@@ -3,15 +3,12 @@ package com.bookbrew.order.service.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.bookbrew.order.service.dto.ProductDTO;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,9 +25,6 @@ public class Promotion {
 
     @Column(name = "product_id")
     private Long productId;
-
-    @Transient
-    private ProductDTO productDTO;
 
     @NotNull(message = "Discount percentage is required")
     private BigDecimal discountPercentage;
@@ -70,14 +64,6 @@ public class Promotion {
 
     public void setProductId(Long productId) {
         this.productId = productId;
-    }
-
-    public ProductDTO getProductDTO() {
-        return productDTO;
-    }
-
-    public void setProductDTO(ProductDTO productDTO) {
-        this.productDTO = productDTO;
     }
 
     public BigDecimal getDiscountPercentage() {

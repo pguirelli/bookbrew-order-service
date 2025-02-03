@@ -13,13 +13,14 @@ import feign.jackson.JacksonDecoder;
 
 @Configuration
 public class FeignConfig {
+
     @Bean
-    public ErrorDecoder errorDecoder() {
+    ErrorDecoder errorDecoder() {
         return new CustomErrorDecoder();
     }
 
     @Bean
-    public JacksonDecoder feignDecoder() {
+    JacksonDecoder feignDecoder() {
         return new JacksonDecoder(customObjectMapper());
     }
 
@@ -30,4 +31,5 @@ public class FeignConfig {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper;
     }
+
 }

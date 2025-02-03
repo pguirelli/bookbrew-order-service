@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.bookbrew.order.service.dto.CustomerDTO;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -30,9 +27,6 @@ public class Order {
 
     @Column(name = "customer_id")
     private Long customerId;
-
-    @Transient
-    private CustomerDTO customerDTO;
 
     private LocalDateTime orderDate;
 
@@ -80,14 +74,6 @@ public class Order {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
-    }
-
-    public CustomerDTO getCustomerDTO() {
-        return customerDTO;
-    }
-
-    public void setCustomerDTO(CustomerDTO customerDTO) {
-        this.customerDTO = customerDTO;
     }
 
     public LocalDateTime getOrderDate() {
