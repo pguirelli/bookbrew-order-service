@@ -3,7 +3,6 @@ package com.bookbrew.order.service.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.bookbrew.order.service.dto.ProductDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -14,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -32,9 +30,6 @@ public class OrderItems {
 
     @Column(name = "product_id")
     private Long productId;
-
-    @Transient
-    private ProductDTO productDTO;
 
     @NotNull(message = "Quantity is required")
     private Integer quantity;
@@ -71,14 +66,6 @@ public class OrderItems {
 
     public void setProductId(Long productId) {
         this.productId = productId;
-    }
-
-    public ProductDTO getProductDTO() {
-        return productDTO;
-    }
-
-    public void setProductDTO(ProductDTO productDTO) {
-        this.productDTO = productDTO;
     }
 
     public Integer getQuantity() {

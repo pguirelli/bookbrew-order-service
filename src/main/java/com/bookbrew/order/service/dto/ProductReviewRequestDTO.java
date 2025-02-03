@@ -1,10 +1,15 @@
 package com.bookbrew.order.service.dto;
 
 public class ProductReviewRequestDTO {
+
     private Long productId;
+
     private Long userId;
+
     private Integer rating;
+
     private String comment;
+
     private Boolean status;
 
     public Long getProductId() {

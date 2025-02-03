@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.bookbrew.order.service.client.ProductClient;
 import com.bookbrew.order.service.dto.ProductReviewRequestDTO;
+import com.bookbrew.order.service.exception.ResourceNotFoundException;
 import com.bookbrew.order.service.model.ProductReview;
 import com.bookbrew.order.service.repository.ProductReviewRepository;
 
@@ -24,7 +25,13 @@ public class ProductReviewService {
     private ProductClient productClient;
 
     public List<ProductReview> getAllReviews() {
-        return productReviewRepository.findAll();
+        List<ProductReview> reviews = productReviewRepository.findAll();
+
+        if (reviews.isEmpty()) {
+            throw new ResourceNotFoundException("No reviews found");
+        }
+
+        return reviews;
     }
 
     public ProductReview getReviewById(Long id) {

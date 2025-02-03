@@ -8,6 +8,7 @@ import feign.Response;
 import feign.codec.ErrorDecoder;
 
 public class CustomErrorDecoder implements ErrorDecoder {
+
     @Override
     public Exception decode(String methodKey, Response response) {
         switch (response.status()) {
@@ -17,13 +18,11 @@ public class CustomErrorDecoder implements ErrorDecoder {
                 return new ResourceNotFoundException("Resource not found");
             default:
                 return new FeignException.FeignServerException(
-                    response.status(),
-                    "Error processing request",
-                    response.request(),
-                    null,
-                    null
-                );
+                        response.status(),
+                        "Error processing request",
+                        response.request(),
+                        null,
+                        null);
         }
     }
 }
-
