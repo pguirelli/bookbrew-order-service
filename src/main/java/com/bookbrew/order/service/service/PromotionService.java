@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bookbrew.order.service.client.ProductClient;
+import com.bookbrew.order.service.dto.ProductDTO;
 import com.bookbrew.order.service.exception.ResourceNotFoundException;
 import com.bookbrew.order.service.model.Promotion;
 import com.bookbrew.order.service.repository.PromotionRepository;
@@ -16,8 +18,18 @@ public class PromotionService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private ProductClient productClient;
+
     public Promotion createPromotion(Promotion promotion) {
+        ProductDTO product = productClient.findProductById(promotion.getProductId());
+
+        if (product == null) {
+            throw new ResourceNotFoundException("Product not found with id: " + promotion.getProductId());
+        }
+
         promotion.setCreationDate(LocalDateTime.now());
+
         return promotionRepository.save(promotion);
     }
 
