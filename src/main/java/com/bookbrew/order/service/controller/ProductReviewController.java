@@ -37,6 +37,11 @@ public class ProductReviewController {
         return ResponseEntity.ok(productReviewService.getReviewById(id));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ProductReview>> getReviewsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(productReviewService.getReviewsByUser(userId));
+    }
+
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ProductReview>> getReviewsByProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(productReviewService.getReviewsByProduct(productId));
