@@ -43,6 +43,10 @@ public class ProductReviewService {
         return productReviewRepository.findByProductId(productId);
     }
 
+    public List<ProductReview> getReviewsByUser(Long userId) {
+        return productReviewRepository.findByUserId(userId);
+    }
+
     public ProductReview createReview(ProductReviewRequestDTO reviewRequest) {
         if (productClient.findProductById(reviewRequest.getProductId()) == null) {
             throw new RuntimeException("Product not found with id: " + reviewRequest.getProductId());

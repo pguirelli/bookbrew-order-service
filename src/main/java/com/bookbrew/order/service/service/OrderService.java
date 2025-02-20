@@ -272,4 +272,13 @@ public class OrderService {
         });
     }
 
+    public List<Order> getOrdersByCustomer(Long customerId) {
+        List<Order> orders = orderRepository.findByCustomerId(customerId);
+
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for customer: " + customerId);
+        }
+
+        return orders;
+    }
 }
