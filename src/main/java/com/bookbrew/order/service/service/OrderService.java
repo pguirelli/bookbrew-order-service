@@ -62,7 +62,7 @@ public class OrderService {
             Order order = new Order();
             order.setCustomerId(orderRequest.getCustomerId());
             order.setOrderDate(LocalDateTime.now());
-            order.setStatus("Aguardando pagamento");
+            order.setStatus("AGUARDANDO PAGAMENTO");
 
             List<OrderItems> orderItems = processOrderItems(orderRequest.getOrderItems(), order);
             order.setOrderItems(orderItems);
@@ -169,7 +169,7 @@ public class OrderService {
     private Payment processPayment(Payment paymentOrder) {
         Payment payment = new Payment();
         payment.setPaymentMethod(paymentOrder.getPaymentMethod());
-        payment.setStatus("Em aprovação");
+        payment.setStatus("APROVADO");
         payment.setTransactionCode("TRC" + UUID.randomUUID().toString());
         payment.setPaymentDate(LocalDateTime.now());
 
